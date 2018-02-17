@@ -27,22 +27,41 @@ export default class App extends Component<Props> {
     super(props)
     this.state = {
       fetching: true,
-      url : ''
+      url : '',
+      startTime : 0,
+      endTime : 0,
     }
     this.changeState = this.changeState.bind(this);
     this.fetchRandomURL = this.fetchRandomURL.bind(this);
   }  
   componentWillMount() {
     this.fetchRandomURL();
-    this.setState({fetching: true});
-    
+  }
+  componentDidMount(){
+    console.log("didmotunt")
+    // this.refs.youtubeComponent.seekTo(120);
   }
 
   fetchRandomURL = () => {
+    this.setState({fetching : true})
     fetch('http://192.168.1.27:8080/api/videos/random')
     .then((response) => response.json())
     .then((responseJson) => {
-      this.setState({url: responseJson.videoLink})
+      
+      console.log(responseJson)
+      let startTimeArray = responseJson.start.split(":");
+      let startTime = parseInt(startTimeArray[0])*60 + parseInt(startTimeArray[1]);
+      console.log(startTime)
+
+      let endTimeArray = responseJson.end.split(":");
+      let endTime = parseInt(endTimeArray[0])*60 + parseInt(endTimeArray[1]);
+      console.log(endTime)
+
+      this.setState({url: responseJson.url,
+      startTime : startTime,
+      endTime : endTime,
+        fetching : false
+      })
     });
   }
 
@@ -56,26 +75,26 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-<YouTube
+      <Text style={styles.welcome}>
+          Weedio
+       </Text>
+      {!this.state.fetching &&
+<YouTube 
+  ref={(e) => this.youtubeComponent = e}
   videoId={this.state.url}
   play={true}             
   fullscreen={false}       
   loop={false}             
-  onReady={e => this.setState({ isReady: true })}
+  onReady={e => {console.log(this);  this.youtubeComponent.seekTo(this.state.startTime) }}
   onChangeState={e => this.changeState(e.state)}
   onChangeQuality={e => this.setState({ quality: e.quality })}
   onError={e => this.setState({ error: e.error })}
+  onProgress={e => {console.log(e);if(Math.floor(e.currentTime) === this.state.endTime){
+   this.fetchRandomURL(); 
+  }}}
   style={{ alignSelf: 'stretch', height: 300 }}
 />
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
-        <Text style={styles.instructions}>
-          {this.state.status}
-        </Text>
+      }
       </View>
     );
   }
