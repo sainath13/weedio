@@ -1,0 +1,6 @@
+target 'Weedio' do
+  use_frameworks!
+  pod 'XCDYouTubeKit', '~> 2.5'
+  pod 'react-native-youtube', :path => '../node_modules/react-native-youtube'
+
+end
