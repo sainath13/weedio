@@ -44,7 +44,7 @@ export default class App extends Component<Props> {
 
   fetchRandomURL = () => {
     this.setState({fetching : true})
-    fetch('http://192.168.1.27:8080/api/videos/random')
+    fetch('https://weedio.herokuapp.com/api/videos/random')
     .then((response) => response.json())
     .then((responseJson) => {
       
@@ -81,6 +81,7 @@ export default class App extends Component<Props> {
       {!this.state.fetching &&
 <YouTube 
   ref={(e) => this.youtubeComponent = e}
+  apiKey={"AIzaSyAiACjVpS2pZIX8Lz90xauFDdLdzto9Gx0"} 
   videoId={this.state.url}
   play={true}             
   fullscreen={false}       
